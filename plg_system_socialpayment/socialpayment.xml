@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" version="5.4" group="system" method="upgrade">
+    <name>plg_system_socialpayment</name>
+    <author>Social Pay Team</author>
+    <creationDate>2024-01</creationDate>
+    <copyright>Copyright (C) 2024 Social Pay Team. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <authorEmail>support@socialpay.com</authorEmail>
+    <authorUrl>https://www.socialpay.com</authorUrl>
+    <version>2.1.0</version>
+    <description>微信支付系统插件</description>
+    
+    <files>
+        <filename plugin="socialpayment">socialpayment.php</filename>
+    </files>
+    
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="enable_payment" type="radio" default="1" label="启用支付功能">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </field>
+                <field name="wechat_app_id" type="text" label="微信AppID" />
+                <field name="wechat_mch_id" type="text" label="微信商户号" />
+                <field name="wechat_api_key" type="password" label="API密钥" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

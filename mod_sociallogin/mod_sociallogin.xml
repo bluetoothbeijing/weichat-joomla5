@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" version="5.4" client="site" method="upgrade">
+    <name>mod_sociallogin</name>
+    <author>Social Pay Team</author>
+    <creationDate>2024-01</creationDate>
+    <copyright>Copyright (C) 2024 Social Pay Team. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <authorEmail>support@socialpay.com</authorEmail>
+    <authorUrl>https://www.socialpay.com</authorUrl>
+    <version>2.1.0</version>
+    <description>微信社交登录模块</description>
+    
+    <files>
+        <filename module="sociallogin">mod_sociallogin.php</filename>
+        <folder>tmpl</folder>
+    </files>
+    
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="show_welcome" type="radio" default="1" label="显示欢迎信息">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </field>
+                <field name="show_avatar" type="radio" default="1" label="显示用户头像">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </field>
+                <field name="show_wechat_login" type="radio" default="1" label="显示微信登录">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

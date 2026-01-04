@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<access component="com_socialorders">
+    <section name="component">
+        <action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
+        <action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
+        <action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE_COMPONENT_DESC" />
+        <action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+        <action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC" />
+        <action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
+        <action name="core.edit.own" title="JACTION_EDITOWN" description="JACTION_EDITOWN_COMPONENT_DESC" />
+    </section>
+    
+    <section name="order">
+        <action name="core.create" title="JACTION_CREATE" description="COM_SOCIALORDERS_ORDER_CREATE_DESC" />
+        <action name="core.delete" title="JACTION_DELETE" description="COM_SOCIALORDERS_ORDER_DELETE_DESC" />
+        <action name="core.edit" title="JACTION_EDIT" description="COM_SOCIALORDERS_ORDER_EDIT_DESC" />
+        <action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_SOCIALORDERS_ORDER_EDITSTATE_DESC" />
+        <action name="core.edit.own" title="JACTION_EDITOWN" description="COM_SOCIALORDERS_ORDER_EDITOWN_DESC" />
+        <action name="core.view" title="JACTION_VIEW" description="COM_SOCIALORDERS_ORDER_VIEW_DESC" />
+        <action name="socialorders.order.pay" title="COM_SOCIALORDERS_ORDER_PAY" description="COM_SOCIALORDERS_ORDER_PAY_DESC" />
+        <action name="socialorders.order.refund" title="COM_SOCIALORDERS_ORDER_REFUND" description="COM_SOCIALORDERS_ORDER_REFUND_DESC" />
+        <action name="socialorders.order.export" title="COM_SOCIALORDERS_ORDER_EXPORT" description="COM_SOCIALORDERS_ORDER_EXPORT_DESC" />
+    </section>
+</access>

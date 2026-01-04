@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <fieldset name="general" label="COM_SOCIALORDERS_CONFIG_GENERAL">
+        <field name="enable_orders" type="radio" default="1" label="启用订单功能">
+            <option value="0">否</option>
+            <option value="1">是</option>
+        </field>
+        <field name="order_prefix" type="text" default="SO" label="订单号前缀" />
+        <field name="default_currency" type="text" default="CNY" label="默认货币" />
+        <field name="decimal_places" type="list" default="2" label="小数位数">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </field>
+        <field name="items_per_page" type="text" default="20" label="每页显示数量" />
+    </fieldset>
+    
+    <fieldset name="payment" label="COM_SOCIALORDERS_CONFIG_PAYMENT">
+        <field name="enable_payment" type="radio" default="1" label="启用支付功能">
+            <option value="0">否</option>
+            <option value="1">是</option>
+        </field>
+        <field name="payment_timeout" type="text" default="1800" label="支付超时时间(秒)" />
+        <field name="auto_refund" type="radio" default="0" label="自动退款">
+            <option value="0">否</option>
+            <option value="1">是</option>
+        </field>
+        <field name="refund_days" type="text" default="7" label="可退款天数" />
+    </fieldset>
+    
+    <fieldset name="wechat" label="COM_SOCIALORDERS_CONFIG_WECHAT">
+        <field name="wechat_app_id" type="text" label="微信公众号AppID" />
+        <field name="wechat_app_secret" type="password" label="微信公众号AppSecret" />
+        <field name="wechat_mch_id" type="text" label="微信支付商户号" />
+        <field name="wechat_api_key" type="password" label="微信支付API密钥" />
+        <field name="wechat_notify_url" type="text" 
+               default="{site}/index.php?option=com_socialorders&amp;task=wechat.notify" 
+               label="微信支付回调URL" />
+        <field name="wechat_scope" type="list" default="snsapi_userinfo" label="微信授权范围">
+            <option value="snsapi_base">静默授权</option>
+            <option value="snsapi_userinfo">用户信息授权</option>
+        </field>
+    </fieldset>
+</config>

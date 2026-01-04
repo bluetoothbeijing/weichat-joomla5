@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" version="5.4" method="upgrade">
+    <name>com_socialorders</name>
+    <author>Social Pay Team</author>
+    <creationDate>2024-01</creationDate>
+    <copyright>Copyright (C) 2024 Social Pay Team. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <authorEmail>support@socialpay.com</authorEmail>
+    <authorUrl>https://www.socialpay.com</authorUrl>
+    <version>2.1.0</version>
+    <description>微信社交支付订单管理系统</description>
+    
+    <files>
+        <!-- 必需的核心文件 -->
+        <filename>socialorders.php</filename>
+        <filename>script.php</filename>
+        
+        <!-- 前台文件 -->
+        <folder>site</folder>
+        
+        <!-- 后台文件 -->
+        <folder>admin</folder>
+    </files>
+    
+    <administration>
+        <menu>微信订单</menu>
+        <submenu>
+            <menu link="option=com_socialorders&amp;view=orders">订单管理</menu>
+            <menu link="option=com_socialorders&amp;view=config">系统配置</menu>
+        </submenu>
+    </administration>
+    
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">admin/sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">admin/sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+    
+    <updateservers>
+        <server type="extension" priority="1" name="Social Orders Updates">https://www.socialpay.com/update/com_socialorders.xml</server>
+    </updateservers>
+</extension>

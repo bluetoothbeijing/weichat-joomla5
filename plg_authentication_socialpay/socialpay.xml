@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" version="5.4" group="authentication" method="upgrade">
+    <name>plg_authentication_socialpay</name>
+    <author>Social Pay Team</author>
+    <creationDate>2024-01</creationDate>
+    <copyright>Copyright (C) 2024 Social Pay Team. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <authorEmail>support@socialpay.com</authorEmail>
+    <authorUrl>https://www.socialpay.com</authorUrl>
+    <version>2.1.0</version>
+    <description>Social Pay Authentication Plugin</description>
+    
+    <files>
+        <filename plugin="socialpay">socialpay.php</filename>
+    </files>
+    
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="enable_wechat" type="radio" default="1" label="启用微信登录">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </field>
+                <field name="wechat_app_id" type="text" label="微信AppID" />
+                <field name="wechat_app_secret" type="password" label="微信AppSecret" />
+                <field name="wechat_scope" type="list" default="snsapi_login" label="授权范围">
+                    <option value="snsapi_base">静默授权</option>
+                    <option value="snsapi_userinfo">用户信息授权</option>
+                    <option value="snsapi_login">网站扫码登录</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
