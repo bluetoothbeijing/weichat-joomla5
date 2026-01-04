@@ -1,43 +1,81 @@
 <?php
+/**
+ * @package     Socialorders
+ * @subpackage  com_socialorders
+ *
+ * @copyright   Copyright (C) 2024. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\AdministratorApplication;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Application\AdministratorApplication;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Session\Session;
 
-$app = Factory::getApplication();
-
-// 检查访问权限
-if (!$app->getIdentity()->authorise('core.manage', 'com_socialorders')) {
-    throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+// 访问检查
+$user = Factory::getUser();
+if (!$user->authorise('core.manage', 'com_socialorders')) {
+    $app = Factory::getApplication();
+    $app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+    $app->redirect('index.php');
+    return;
 }
 
-// 加载语言文件
-$app->getLanguage()->load('com_socialorders', JPATH_ADMINISTRATOR);
+// 引入组件助手
+JLoader::register('SocialordersHelper', JPATH_COMPONENT . '/helpers/socialorders.php');
 
-// 获取请求参数
-$task = $app->input->get('task', 'display');
-$view = $app->input->get('view', 'orders');
+// 获取输入
+$input = Factory::getApplication()->input;
 
-// 设置默认控制器
-$controllerClass = 'SocialordersController' . ucfirst($view);
-$controllerFile = JPATH_COMPONENT_ADMINISTRATOR . '/controllers/' . strtolower($view) . '.php';
+// 获取视图和任务
+$view   = $input->get('view', 'orders');
+$task   = $input->get('task', 'display');
+$format = $input->get('format', 'html');
 
-if (file_exists($controllerFile)) {
-    require_once $controllerFile;
-    
-    if (class_exists($controllerClass)) {
-        $controller = new $controllerClass();
-    } else {
-        throw new Exception(Text::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER_CLASS', $controllerClass));
-    }
+// 设置视图
+$input->set('view', $view);
+
+// 如果任务中没有'.'，则根据视图添加前缀
+if (strpos($task, '.') === false) {
+    $input->set('task', $view . '.' . $task);
 } else {
-    // 使用默认控制器
-    $controller = BaseController::getInstance('Socialorders');
+    list($controllerName, $taskName) = explode('.', $task);
+    $input->set('controller', $controllerName);
+    $input->set('task', $taskName);
+}
+
+// 获取控制器名称
+$controllerName = $input->get('controller', $view);
+
+// 根据控制器名称加载对应的控制器文件
+$controllerPath = JPATH_COMPONENT . '/controllers/' . $controllerName . '.php';
+if (file_exists($controllerPath)) {
+    require_once $controllerPath;
+} else {
+    // 默认控制器
+    require_once JPATH_COMPONENT . '/controller.php';
+}
+
+// 构建控制器类名
+$controllerClass = 'SocialordersController' . ucfirst($controllerName);
+
+// 检查控制器类是否存在
+if (class_exists($controllerClass)) {
+    $controller = new $controllerClass();
+} else {
+    // 回退到基础控制器
+    require_once JPATH_COMPONENT . '/controller.php';
+    $controller = new SocialordersController();
 }
 
 // 执行任务
-$controller->execute($task);
+$controller->execute($input->get('task'));
+
+// 重定向
 $controller->redirect();

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <!-- 最基本字段测试 -->
+    <fieldset name="basic" label="COM_SOCIALORDERS_FIELDSET_BASIC">
+        <field
+            name="id"
+            type="hidden"
+        />
+        
+        <field
+            name="order_no"
+            type="text"
+            label="COM_SOCIALORDERS_FIELD_ORDER_NO_LABEL"
+            description="COM_SOCIALORDERS_FIELD_ORDER_NO_DESC"
+            size="20"
+            required="true"
+            class="inputbox"
+        />
+        
+        <field
+            name="title"
+            type="text"
+            label="COM_SOCIALORDERS_FIELD_TITLE_LABEL"
+            description="COM_SOCIALORDERS_FIELD_TITLE_DESC"
+            size="60"
+            required="true"
+        />
+        
+        <field
+            name="amount"
+            type="text"
+            label="COM_SOCIALORDERS_FIELD_AMOUNT_LABEL"
+            description="COM_SOCIALORDERS_FIELD_AMOUNT_DESC"
+            size="10"
+            required="true"
+        />
+        
+        <field
+            name="status"
+            type="list"
+            label="COM_SOCIALORDERS_FIELD_STATUS_LABEL"
+            description="COM_SOCIALORDERS_FIELD_STATUS_DESC"
+            default="pending"
+        >
+            <option value="pending">COM_SOCIALORDERS_STATUS_PENDING</option>
+            <option value="processing">COM_SOCIALORDERS_STATUS_PROCESSING</option>
+            <option value="completed">COM_SOCIALORDERS_STATUS_COMPLETED</option>
+        </field>
+    </fieldset>
+</form>

@@ -1,48 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" version="5.4" method="upgrade">
+<extension type="component" method="upgrade">
     <name>com_socialorders</name>
-    <author>Social Pay Team</author>
-    <creationDate>2024-01</creationDate>
-    <copyright>Copyright (C) 2024 Social Pay Team. All rights reserved.</copyright>
-    <license>GNU General Public License version 2 or later</license>
-    <authorEmail>support@socialpay.com</authorEmail>
-    <authorUrl>https://www.socialpay.com</authorUrl>
-    <version>2.1.0</version>
-    <description>微信社交支付订单管理系统</description>
-    
-    <files>
-        <!-- 必需的核心文件 -->
-        <filename>socialorders.php</filename>
-        <filename>script.php</filename>
-        
-        <!-- 前台文件 -->
-        <folder>site</folder>
-        
-        <!-- 后台文件 -->
-        <folder>admin</folder>
-    </files>
-    
+    <version>2.0.5</version>
+    <description>Social Orders Component</description>
+
+    <!-- 1. 管理员后台文件 -->
     <administration>
-        <menu>微信订单</menu>
-        <submenu>
-            <menu link="option=com_socialorders&amp;view=orders">订单管理</menu>
-            <menu link="option=com_socialorders&amp;view=config">系统配置</menu>
-        </submenu>
+        <menu>Social Orders</menu>
+        <!-- 声明admin子目录下的文件 -->
+        <files folder="admin">
+            <filename>socialorders.php</filename>
+            <filename>config.xml</filename>
+            <folder>controllers</folder>
+            <folder>models</folder>
+            <folder>tables</folder>
+            <folder>helpers</folder>
+            <folder>views</folder>
+            <!-- 必须声明sql文件夹才会被复制 -->
+            <folder>sql</folder>
+        </files>
     </administration>
-    
+
+    <!-- 2. 站点前端文件 -->
+    <files folder="site">
+        <filename>socialorders.php</filename>
+        <filename>controller.php</filename>
+        <folder>controllers</folder>
+        <folder>models</folder>
+        <folder>helpers</folder>
+        <folder>views</folder>
+    </files>
+
+    <!-- 3. 组件根目录下的公共文件（关键修正！） -->
+    <files>
+        <!-- 这些文件夹在com_socialorders/根目录下，不在admin或site内 -->
+        <folder>controllers</folder>
+        <folder>models</folder>
+        <folder>sql</folder>
+        <folder>tables</folder>
+        <folder>views</folder>
+        <!-- 根目录的脚本和配置文件 -->
+        <filename>access.xml</filename>
+        <filename>script.php</filename>
+        <filename>socialorders.php</filename>
+    </files>
+
+    <!-- 4. SQL安装指令（路径相对于组件根目录） -->
     <install>
         <sql>
-            <file driver="mysql" charset="utf8">admin/sql/install.mysql.utf8.sql</file>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
         </sql>
     </install>
-    
     <uninstall>
         <sql>
-            <file driver="mysql" charset="utf8">admin/sql/uninstall.mysql.utf8.sql</file>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
-    
-    <updateservers>
-        <server type="extension" priority="1" name="Social Orders Updates">https://www.socialpay.com/update/com_socialorders.xml</server>
-    </updateservers>
+
 </extension>

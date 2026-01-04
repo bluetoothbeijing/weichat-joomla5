@@ -1,194 +1,155 @@
 <?php
 defined('_JEXEC') or die;
 
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
 
 HTMLHelper::_('behavior.formvalidator');
 HTMLHelper::_('behavior.keepalive');
 HTMLHelper::_('formbehavior.chosen', 'select');
 
-$app = JFactory::getApplication();
+$app = Factory::getApplication();
 $input = $app->input;
+$id = $input->getInt('id', 0);
+$isNew = ($id == 0);
 
-// 隐藏主菜单
-$app->input->set('hidemainmenu', true);
+// 如果是编辑模式，尝试从数据库获取数据
+$item = null;
+if (!$isNew) {
+    try {
+        $db = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__social_orders'))
+            ->where($db->quoteName('id') . ' = ' . $id);
+        $db->setQuery($query);
+        $item = $db->loadObject();
+    } catch (Exception $e) {
+        $item = null;
+    }
+}
 
-// 字段集
-$fieldSets = $this->form->getFieldsets();
+// 设置默认值
+$order_no = $item ? $item->order_no : ('SO' . date('YmdHis') . rand(1000, 9999));
+$title = $item ? $item->title : '';
+$amount = $item ? $item->amount : '0.00';
+$status = $item ? $item->status : 'pending';
+$state = $item ? $item->state : 1;
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_socialorders&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="order-form" class="form-validate">
+<form action="<?php echo Route::_('index.php?option=com_socialorders&task=order.save'); ?>"
+      method="post" name="adminForm" id="adminForm" class="form-validate form-horizontal">
     
-    <div class="form-horizontal">
-        <div class="row-fluid">
-            <div class="span9">
-                <?php echo HTMLHelper::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>
+    <div class="row-fluid">
+        <div class="span12">
+            <fieldset class="adminform">
+                <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_DETAILS'); ?></legend>
                 
-                <?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'general', Text::_('COM_SOCIALORDERS_ORDER_DETAILS', true)); ?>
-                <div class="row-fluid">
-                    <div class="span6">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_BASIC_INFO'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('basic') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
+                <div class="control-group">
+                    <div class="control-label">
+                        <label for="order_no" class="required">
+                            <?php echo Text::_('COM_SOCIALORDERS_FIELD_ORDER_NO_LABEL'); ?><span class="star">&nbsp;*</span>
+                        </label>
                     </div>
-                    <div class="span6">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_STATUS'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('status') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
-                        
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_PAYMENT'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('payment') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
+                    <div class="controls">
+                        <input type="text" name="jform[order_no]" id="order_no" 
+                               value="<?php echo htmlspecialchars($order_no, ENT_QUOTES, 'UTF-8'); ?>" 
+                               class="inputbox required" size="20" required="required" />
                     </div>
                 </div>
-                <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
                 
-                <?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'items', Text::_('COM_SOCIALORDERS_ORDER_ITEMS', true)); ?>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_ITEMS'); ?></legend>
-                            <div class="alert alert-info">
-                                <?php echo Text::_('COM_SOCIALORDERS_ORDER_ITEMS_DESC'); ?>
-                            </div>
-                            <!-- 这里可以添加商品项的动态表单 -->
-                        </fieldset>
+                <div class="control-group">
+                    <div class="control-label">
+                        <label for="title" class="required">
+                            <?php echo Text::_('COM_SOCIALORDERS_FIELD_TITLE_LABEL'); ?><span class="star">&nbsp;*</span>
+                        </label>
+                    </div>
+                    <div class="controls">
+                        <input type="text" name="jform[title]" id="title" 
+                               value="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>" 
+                               class="inputbox required" size="60" required="required" />
                     </div>
                 </div>
-                <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
                 
-                <?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'address', Text::_('COM_SOCIALORDERS_ORDER_ADDRESS', true)); ?>
-                <div class="row-fluid">
-                    <div class="span6">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_BILLING_ADDRESS'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('billing_address') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
+                <div class="control-group">
+                    <div class="control-label">
+                        <label for="amount" class="required">
+                            <?php echo Text::_('COM_SOCIALORDERS_FIELD_AMOUNT_LABEL'); ?><span class="star">&nbsp;*</span>
+                        </label>
                     </div>
-                    <div class="span6">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_SHIPPING_ADDRESS'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('shipping_address') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
+                    <div class="controls">
+                        <input type="text" name="jform[amount]" id="amount" 
+                               value="<?php echo htmlspecialchars($amount, ENT_QUOTES, 'UTF-8'); ?>" 
+                               class="inputbox required" size="10" required="required" />
                     </div>
                 </div>
-                <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
                 
-                <?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'notes', Text::_('COM_SOCIALORDERS_ORDER_NOTES', true)); ?>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <fieldset class="adminform">
-                            <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_NOTES'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('notes') as $field) : ?>
-                                <div class="control-group">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
+                <div class="control-group">
+                    <div class="control-label">
+                        <label for="status">
+                            <?php echo Text::_('COM_SOCIALORDERS_FIELD_STATUS_LABEL'); ?>
+                        </label>
+                    </div>
+                    <div class="controls">
+                        <select name="jform[status]" id="status" class="inputbox">
+                            <option value="pending" <?php echo $status == 'pending' ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('COM_SOCIALORDERS_STATUS_PENDING'); ?>
+                            </option>
+                            <option value="processing" <?php echo $status == 'processing' ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('COM_SOCIALORDERS_STATUS_PROCESSING'); ?>
+                            </option>
+                            <option value="completed" <?php echo $status == 'completed' ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('COM_SOCIALORDERS_STATUS_COMPLETED'); ?>
+                            </option>
+                            <option value="cancelled" <?php echo $status == 'cancelled' ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('COM_SOCIALORDERS_STATUS_CANCELLED'); ?>
+                            </option>
+                        </select>
                     </div>
                 </div>
-                <?php echo HTMLHelper::_('bootstrap.endTab'); ?>
                 
-                <?php echo HTMLHelper::_('bootstrap.endTabSet'); ?>
-            </div>
-            
-            <div class="span3">
-                <fieldset class="form-vertical">
-                    <legend><?php echo Text::_('COM_SOCIALORDERS_ORDER_SUMMARY'); ?></legend>
-                    
-                    <?php if ($this->item->id) : ?>
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('COM_SOCIALORDERS_ORDER_NO'); ?></div>
-                        <div class="controls">
-                            <strong><?php echo $this->item->order_no; ?></strong>
-                        </div>
+                <div class="control-group">
+                    <div class="control-label">
+                        <label for="state">
+                            <?php echo Text::_('JSTATUS'); ?>
+                        </label>
                     </div>
-                    
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('COM_SOCIALORDERS_ORDER_DATE'); ?></div>
-                        <div class="controls">
-                            <?php echo HTMLHelper::_('date', $this->item->created, Text::_('DATE_FORMAT_LC2')); ?>
-                        </div>
+                    <div class="controls">
+                        <select name="jform[state]" id="state" class="inputbox">
+                            <option value="1" <?php echo $state == 1 ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('JPUBLISHED'); ?>
+                            </option>
+                            <option value="0" <?php echo $state == 0 ? 'selected="selected"' : ''; ?>>
+                                <?php echo Text::_('JUNPUBLISHED'); ?>
+                            </option>
+                        </select>
                     </div>
-                    
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('COM_SOCIALORDERS_ORDER_AMOUNT'); ?></div>
-                        <div class="controls">
-                            <span class="label label-success" style="font-size: 16px;">
-                                <?php echo $this->item->amount_formatted; ?>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <hr />
-                    
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('JSTATUS'); ?></div>
-                        <div class="controls">
-                            <?php echo $this->form->getValue('state') ? Text::_('JPUBLISHED') : Text::_('JUNPUBLISHED'); ?>
-                        </div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('COM_SOCIALORDERS_ORDER_STATUS'); ?></div>
-                        <div class="controls">
-                            <span class="label label-<?php echo $this->item->status == 'completed' ? 'success' : ($this->item->status == 'pending' ? 'warning' : 'danger'); ?>">
-                                <?php echo $this->item->status_text; ?>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <div class="control-label"><?php echo Text::_('COM_SOCIALORDERS_PAYMENT_STATUS'); ?></div>
-                        <div class="controls">
-                            <span class="label label-<?php echo $this->item->payment_status == 'paid' ? 'success' : ($this->item->payment_status == 'unpaid' ? 'warning' : 'danger'); ?>">
-                                <?php echo $this->item->payment_status_text; ?>
-                            </span>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php echo $this->form->renderField('created_by'); ?>
-                    <?php echo $this->form->renderField('created'); ?>
-                    <?php echo $this->form->renderField('modified_by'); ?>
-                    <?php echo $this->form->renderField('modified'); ?>
-                </fieldset>
-            </div>
+                </div>
+            </fieldset>
         </div>
     </div>
     
+    <input type="hidden" name="jform[id]" value="<?php echo $id; ?>" />
     <input type="hidden" name="task" value="" />
-    <input type="hidden" name="return" value="<?php echo $input->getCmd('return'); ?>" />
+    <input type="hidden" name="option" value="com_socialorders" />
+    <input type="hidden" name="view" value="order" />
+    <input type="hidden" name="layout" value="edit" />
     <?php echo HTMLHelper::_('form.token'); ?>
 </form>
+
+<script type="text/javascript">
+Joomla.submitbutton = function(task) {
+    if (task == 'order.cancel' || document.formvalidator.isValid(document.getElementById('adminForm'))) {
+        // 如果是取消，直接重定向
+        if (task == 'order.cancel') {
+            window.location.href = 'index.php?option=com_socialorders&view=orders';
+            return;
+        }
+        
+        // 否则提交表单
+        Joomla.submitform(task, document.getElementById('adminForm'));
+    }
+}
+</script>

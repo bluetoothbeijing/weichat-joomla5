@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" version="5.4" method="upgrade">
+    <name>pkg_socialpay</name>
+    <packagename>pkg_socialpay</packagename>
+    <version>2.0.5</version>
+    <creationDate>2026-01</creationDate>
+    <author>Social Pay Team</author>
+    <authorEmail>support@socialpay.com</authorEmail>
+    <authorUrl>https://www.socialpay.com</authorUrl>
+    <copyright>Copyright (C) 2026 Social Pay Team. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <description>微信登录支付包</description>
+    
+    <!-- 修改这里：使用正确的files声明方式 -->
+    <files>
+        <file type="component" id="com_socialorders">com_socialorders/socialorders.xml</file>
+        <file type="plugin" id="socialpay" group="authentication">plg_authentication_socialpay/socialpay.xml</file>
+        <file type="plugin" id="socialpayment" group="system">plg_system_socialpayment/socialpayment.xml</file>
+        <file type="module" id="mod_sociallogin" client="site">mod_sociallogin/mod_sociallogin.xml</file>
+    </files>
+    
+    <scriptfile>script.php</scriptfile>
+</extension>

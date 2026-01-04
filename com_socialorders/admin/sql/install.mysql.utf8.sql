@@ -256,95 +256,14 @@ CREATE TABLE IF NOT EXISTS `#__social_order_addresses` (
 -- ===========================================
 
 -- 插入默认微信配置
-INSERT INTO `#__social_wechat_config` 
-(`type`, `app_id`, `app_secret`, `mch_id`, `api_key`, `is_default`, `status`, `description`) 
-VALUES 
-('mp', 'your_mp_app_id', 'your_mp_app_secret', NULL, NULL, 1, 1, '微信公众号配置'),
-('open', 'your_open_app_id', 'your_open_app_secret', NULL, NULL, 0, 1, '微信开放平台配置'),
-('pay', 'your_pay_app_id', NULL, 'your_mch_id', 'your_api_key', 1, 1, '微信支付配置');
+INSERT IGNORE INTO `#__social_wechat_config`
+(`type`, `app_id`, `app_secret`, `mch_id`, `api_key`, `is_default`, `status`, `description`)
+VALUES
+('mp', 'your_mp_app_id', 'your_mp_app_secret', NULL, NULL, 1, 1, '微信公众号配置（请修改）'),
+('open', 'your_open_app_id', 'your_open_app_secret', NULL, NULL, 0, 1, '微信开放平台配置（请修改）'),
+('pay', 'your_pay_app_id', NULL, 'your_mch_id', 'your_api_key', 1, 1, '微信支付配置（请修改）');
 
 -- 创建索引优化
 CREATE INDEX idx_composite_orders ON `#__social_orders` (`user_id`, `status`, `created`);
 CREATE INDEX idx_composite_payments ON `#__social_payments` (`order_id`, `status`, `created`);
 CREATE INDEX idx_composite_social_users ON `#__social_users` (`user_id`, `provider`, `is_bound`);
-
--- 创建视图
-CREATE OR REPLACE VIEW `#__social_order_summary` AS
-SELECT 
-    o.id,
-    o.order_no,
-    o.user_id,
-    o.title,
-    o.amount,
-    o.status,
-    o.payment_status,
-    o.payment_time,
-    o.created,
-    COUNT(i.id) as item_count,
-    SUM(i.total) as items_total,
-    u.name as customer_name,
-    u.username as customer_username,
-    u.email as customer_email
-FROM `#__social_orders` o
-LEFT JOIN `#__social_order_items` i ON o.id = i.order_id
-LEFT JOIN `#__users` u ON o.user_id = u.id
-WHERE o.state = 1
-GROUP BY o.id;
-
--- ===========================================
--- 存储过程：更新订单统计
--- ===========================================
-DELIMITER $$
-
-CREATE PROCEDURE `UpdateOrderStats`(IN orderId INT)
-BEGIN
-    DECLARE itemsTotal DECIMAL(10,2);
-    DECLARE itemsCount INT;
-    
-    -- 计算订单商品总金额和数量
-    SELECT 
-        COALESCE(SUM(total), 0),
-        COALESCE(COUNT(id), 0)
-    INTO itemsTotal, itemsCount
-    FROM `#__social_order_items`
-    WHERE order_id = orderId;
-    
-    -- 更新订单
-    UPDATE `#__social_orders`
-    SET 
-        amount = itemsTotal,
-        modified = NOW()
-    WHERE id = orderId;
-END$$
-
-DELIMITER ;
-
--- ===========================================
--- 触发器：订单状态变化日志
--- ===========================================
-DELIMITER $$
-
-CREATE TRIGGER `trg_order_status_change`
-AFTER UPDATE ON `#__social_orders`
-FOR EACH ROW
-BEGIN
-    IF OLD.status != NEW.status THEN
-        INSERT INTO `#__social_payment_logs`
-        (order_id, log_type, action, message, created)
-        VALUES
-        (NEW.id, 'order_status', 'status_changed', 
-         CONCAT('订单状态从 ', OLD.status, ' 变更为 ', NEW.status), 
-         NOW());
-    END IF;
-    
-    IF OLD.payment_status != NEW.payment_status THEN
-        INSERT INTO `#__social_payment_logs`
-        (order_id, log_type, action, message, created)
-        VALUES
-        (NEW.id, 'payment_status', 'status_changed', 
-         CONCAT('支付状态从 ', OLD.payment_status, ' 变更为 ', NEW.payment_status), 
-         NOW());
-    END IF;
-END$$
-
-DELIMITER ;
